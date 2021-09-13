@@ -1,0 +1,50 @@
+---
+title: "Assignment_1"
+author: "6252320 Leon Debnath"
+date: "10/09/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Question 1 (Named Distributions)
+Calculate the sum of the probabilities for the total number of tickets sold (80) that each individual attends (85% per person) up to the full capacity of the venue (70 seats) 
+
+```{r}
+k <- 70
+n <- 80
+p <- 0.85
+
+pbinom(q=k, size=n, prob=p)
+```
+### Question 2 (Independence)
+Real world examples of
+
+1. Two random variables that are independent and identically distributed
+$$
+\text{Let } D \text{ be the value of a rolled die where }D \in \{1,2,3,4,5,6\}\text{, such that the probability }P(D=1)=1/6\\
+\text{As each roll of the die is an independent and identically distributed event where } D(s) \text{ is the possible outcome } s \text{ for each roll}\\
+D(s_{1}) = D(s_{2})
+$$
+2. Two random variables that are independent and not identically distributed
+$$
+\text{Let } D \text{ be the combined value of two rolled dice } D \in \{2 ... 12\} \text{. Despite each die having a probability of landing on any value as before }\\
+\text{where }P(D) = 1/6\text{ the combined value has an uneven distribution give the fact that }d_{1} + d_{2} = 1\text{ can never occur, but the value 10 can be}\\
+\text{made up of }4 + 6\text{ and }5 + 5.\text{ The intuition behind this can be shown in a histogram of results proving that a random sample of independent variables}\\
+\text{are not distributed identically.}
+$$
+```{r}
+D <- c(1,2,3,4,5,6)
+D <- rep(D,6)
+E <- c(rep(1,6), rep(2,6), rep(3,6), rep(4,6), rep(5,6), rep(6,6)) 
+D <- D + E
+hist(D, breaks=c(36))
+```
+
+3. Two random variables that are dependent and identically distributed
+
+
+4. Two random variables that are dependent and not identically distributed
+
