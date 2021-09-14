@@ -44,7 +44,17 @@ hist(D, breaks=c(36))
 ```
 
 3. Two random variables that are dependent and identically distributed
-
+$$
+\text{Let } H \text{ be the value of a flipped coin where value is heads}\\
+\text{Let } T \text{ be the value of a flipped coin where value is tails}\\
+\text{Both }H\text{ and }T\text{ are identically distributed with }P(H) = P(T) = 1/2\\
+H \text{ and }T\text{ are dependent as } H \text{ is the inverse of  } T
+$$
 
 4. Two random variables that are dependent and not identically distributed
-
+$$
+\text{Let } H \text{ be the value of the height of a human within a population}\\
+\text{Let } W \text{ be the value of the weight of a human within the same population}\\
+\text{Both } H \text{ and } W \text{ fall within a normal distribution}\\
+\text{Yet as the height of a human increases, so does their weight}\\ 
+$$
