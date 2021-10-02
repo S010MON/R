@@ -1,0 +1,138 @@
+---
+title: "6252320_Assignment_2"
+author: "Leon Debnath"
+date: "26/09/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assignment 2
+
+Exercise 1
+
+The Beta distribution $Beta(a, b)$ has the following Probability Density Function (PDF):
+$$
+f(x) =cx^{a-1}(1-x)^{b-1}, \text{ for } 0< x <1,
+$$
+with parameters $a>0$ and $b>0$, and a constant $c$ chosen to make it a valid PDF. Let $X~Beta(a, b)$ with parameters $a=5$ and $b=2$
+
+(a) Find c for the given parameters
+
+For $X$ to be a valid PDF $\int_{1}^{0} X = 1$  therefore:
+
+$$\int_{1}^{0} cx^{5-1}*(1-x)^{2-1}\text{ }dx = 1\\$$
+$$\int_{1}^{0} cx^{4}* cx^{5}\text{ }dx\\$$
+$$\left[\frac{c}{5}x^{5} - \frac{c}{6}x^{6}  \right]^{1}_{0}\\$$
+$$\left[\frac{c}{5} - \frac{c}{6}  \right]^{1}_{0}\\$$
+$$c(\frac{1}{5} - \frac{1}{6})\\$$
+$$\frac{c}{30} = 1\\$$
+$$\text{thus: } c= 30$$
+
+(b) Find $P(0.1< X <0.9)$
+
+We can calculate the probability by finding the area under the curve between $0.1$ and $0.9$
+
+$$\int_{0.9}^{0.1} 30x^{4} \cdot (1-x)\text{ }dx\\$$
+$$\int_{0.9}^{0.1} 30x^{4} \cdot 30x^{5}\text{ }dx\\$$
+$$\left[\frac{30}{5}x^{5} - \frac{c}{6}x^{6}  \right]^{0.9}_{0.1}\\$$
+$$\left[\frac{30}{5}(0.9)^{5} - \frac{c}{6}(0.9)^{6}  \right] - \left[\frac{30}{5}(0.1)^{5} - \frac{c}{6}(0.1)^{6}  \right]\\$$
+$$P(0.1 < X < 0.9) = 0.8857$$
+
+(c) Find $E(X)$ and $Var(X)$
+
+To calculate the Expectation:
+
+
+$$E(X) = \int_{\infty}^{-\infty} x\cdot f(x)\text{ }dx\\$$
+
+
+$$\int_{0}^{1} 30x^{4} - 30^{5}\text{ }dx = \int_{0}^{1} 30x^{5} - 30^{6}\text{ }dx\\$$
+$$\left[\frac{30}{6}x^{6} - \frac{30}{7}x^{7}  \right]^{1}_{0} =  5 - \frac{30}{7} = \frac{5}{7}$$
+To calculate the Variance:
+
+$$var(X) = E(x^{2}) - E(x)^{2}\\$$
+$$E(x^{2}) = \int_{0}^{1}x^{2}\cdot f(x)\text{ }dx\\$$
+$$\int_{0}^{1}x^{2}\cdot (30x^{4} - 30x^{5})\text{ }dx=\int_{0}^{1}30x^{6} - 30x^{7}\text{ }dx\\$$
+$$\left[30x^{6} - 30x^{7}  \right]^{1}_{0} = \frac{30}{7}-\frac{30}{8} = \frac{30}{56}\\$$
+$$E(x)^{2} = \bigg(\frac{5}{7}\bigg)^{2} = \frac{25}{49}\\$$
+$$E(x^{2}) - E(x)^{2} = \frac{30}{56} - \frac{25}{49} = \frac{5}{196}$$
+
+
+Exercise 2
+(a) Create your own version of Figure 1 and implement a simulation experiment to compute the following probability for your own PDF $f$
+
+```{r}
+# Create an "unknown" function that fulfils the requirements to be a PDF
+# Due to the 1 this function is above 0 everywhere
+f <- function(x){1 + cos(x)}
+plot(f, 0, 10)
+```
+
+
+
+```{r}
+# The support of f is between 0 and 10
+a <- 0
+b <- 10
+
+# The value of the integral of f(x) must be equal to 1
+f_int = integrate(f, lower=a, upper=b)
+
+# To ensure this, it is multiplied by a constant 'c' that makes the value of f_int between 0 and 10 = 1
+c <- (1 / f_int$value)
+f <- function(x){c * (1 + cos(x))}
+plot(f, 0, 10)
+```
+
+
+```{r}
+# To confirm that this is equal to one
+integrate(f, lower=a, upper=b)
+```
+
+```{r}
+set.seed(12345)
+n = 10^4
+
+X <- runif(n, min=a, max=b)
+Y <- runif(n, min=0, max=2)
+
+plot(X, Y, main='Uniform Distribution')
+```
+
+```{r}
+f_dist <- lapply(X, f) >= Y
+
+X <- X[f_dist]
+Y <- Y[f_dist]
+
+plot(X, Y, main='Fitted Distribution')
+```
+
+
+```{r}
+P <- 1 - sum(X >= 3 & X < 6)/length(X)
+P
+```
+(b) What components of your simulation have impact on approximation accuracy?
+
+Increasing the size of the random sampling increases the accuracy of the simulation as with a smaller random distribution the distribution is more skewed by the random sampling of variables.  This can be illustrated by running the experiment multiple times and plotting the output with different sample sizes.
+
+```{r}
+set.seed(12345)
+for (i in 1:5)
+{
+  n <- 10^i
+  X <- runif(n, min=a, max=b)
+  Y <- runif(n, min=0, max=2)
+  f_dist <- lapply(X, f) >= Y
+  X <- X[f_dist]
+  Y <- Y[f_dist]
+  P <- 1 - sum(X >= 3 & X < 6)/length(X)
+  plot(X, Y)
+  cat("Estimated probability at 10^",i, " is ", P, "\n")
+}
+```
