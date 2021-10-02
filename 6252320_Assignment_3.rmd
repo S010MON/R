@@ -9,22 +9,52 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Assignment 3
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Exercise 1
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+The Beta distribution $Beta(a, b)$ has the following Probability Density Function (PDF):
+$$
+f(x) =x^{a-1}(1-x)^{b-1}, \text{ for } 0< x <1,
+$$
 
-```{r cars}
-summary(cars)
+```{r}
+a <- 5
+b <- 2
+beta <- function(x) x^(5-1) * (1-x)^(2-1)
+
+set.seed(12345)
+n = 10^5
+X_rand <- runif(n, min=0, max=5)
+Y_rand <- runif(n, min=0, max=5)
+
+plot(X_rand, Y_rand, main='Uniform Distribution')
+
+```
+```{r}
+
+beta_dist <- lapply(X_rand, beta) >= Y_rand/30
+
+X_beta <- X_rand[beta_dist]
+Y_beta <- Y_rand[beta_dist]
+
+plot(X_beta, Y_beta, main='Beta Distribution')
+```
+The median of a value or function is calculated using
+$$
+median(f(x)) = \frac{\sum f(x)}{n}
+$$
+We can calculate a random sample within our distribution 
+```{r}
+median = sum(Y_beta)/length(Y_beta)
+median
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+X <- seq(0, 1, by = 0.02)
+Y <- dbeta(X, shape1=a, shape2=b)
+M = median(X, na.rm = FALSE)
+M
+plot(X,Y)
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
