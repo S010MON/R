@@ -15,15 +15,15 @@ Exercise 1
 
 The Beta distribution $Beta(a, b)$ has the following Probability Density Function (PDF):
 $$
-f(x) =x^{a-1}(1-x)^{b-1}, \text{ for } 0< x <1,
+f(x) =cx^{a-1}(1-x)^{b-1}, \text{ for } 0< x <1,
 $$
 
 ```{r}
 a <- 5
 b <- 2
-beta <- function(x) x^(5-1) * (1-x)^(2-1)
+beta <- function(x) 30*x^(5-1) * (1-x)^(2-1)
 
-set.seed(12345)
+set.seed(12345) 
 n = 10^5
 X_rand <- runif(n, min=0, max=5)
 Y_rand <- runif(n, min=0, max=5)
@@ -33,7 +33,7 @@ plot(X_rand, Y_rand, main='Uniform Distribution')
 ```
 ```{r}
 
-beta_dist <- lapply(X_rand, beta) >= Y_rand/30
+beta_dist <- lapply(X_rand, beta) >= Y_rand
 
 X_beta <- X_rand[beta_dist]
 Y_beta <- Y_rand[beta_dist]
@@ -46,15 +46,47 @@ median(f(x)) = \frac{\sum f(x)}{n}
 $$
 We can calculate a random sample within our distribution 
 ```{r}
-median = sum(Y_beta)/length(Y_beta)
-median
+sorted = sort(Y_beta)
+if( length(sorted) %% 2 == 0){
+  first = length(sorted)/2
+  second = length(sorted)/2 + 1
+  median_est = (sorted[first] + sorted[second])/2
+} else {
+  middle = length(sorted)/2
+  median_est = sorted[middle]
+}
+
+X <- seq(0, 1, by = 0.02)
+Y <- dbeta(X, shape1=a, shape2=b)
+median_act = median(Y, na.rm = FALSE)
+
+plot(X,Y)
+abline(v=median_est, col='red')
+text(0.8, 1, labels='Est', col='red')
+abline(v=median_act, col='blue')
+
+sprintf("The estimated median is: %f", median_est)
+sprintf("The calculated median is: %f", median_act)
 ```
 
 
+The Central Limit Theorem (CLT) states that given a sufficiently large sample size, the sampling distribution of the sample means approaches a normal distribution — no matter what the shape of the population distribution.
+
+In the case of a Galton Board the probability of a ball landing in any given slot can be calculated by counting the number of paths that lead there and then dividing that value by the total number of paths. The resulting distribution is discrete and can be calculated by evaluating the Binomial function:
+$$
+f(k, n) = {}_{n} C_{k} \cdot P(k,n) 
+$$
+By taking the mean of the binomial we can simulate the final slot that the ball lands in.  Summing the number of times the mean value equals the value of each slot (rounding to the nearest integer) is equivalent to allowing each slot to fill with multiple balls.  Given a large enough sample size, by the CLT the values will form a normal distribution as plotted below
+
 ```{r}
-X <- seq(0, 1, by = 0.02)
-Y <- dbeta(X, shape1=a, shape2=b)
-M = median(X, na.rm = FALSE)
-M
-plot(X,Y)
+balls_dropped = 100
+slots = 50
+balls_per_slot = rep(0, slots)
+for(ball in 1:balls_dropped)
+{
+  mean = rbinom(100, slots, 0.5)                    # Calculate the final landing place
+  mean = trunc(mean)                                # Truncate to integer value
+  balls_per_slot[mean] <- balls_per_slot[mean] + 1  # Increment the sum for the slot
+}
+plot(balls_per_slot)
 ```
