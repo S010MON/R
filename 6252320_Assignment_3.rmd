@@ -9,14 +9,15 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Assignment 3
+# Assignment 3
 
-Exercise 1
+## Exercise 1
 
 The Beta distribution $Beta(a, b)$ has the following Probability Density Function (PDF):
 $$
 f(x) =cx^{a-1}(1-x)^{b-1}, \text{ for } 0< x <1,
 $$
+Using the previous values from the last exercise where: $a = 5,$ $b = 4,$ and $c = 30$ we can form a distribution through rejection sampling:
 
 ```{r}
 a <- 5
@@ -28,11 +29,6 @@ n = 10^5
 X_rand <- runif(n, min=0, max=5)
 Y_rand <- runif(n, min=0, max=5)
 
-plot(X_rand, Y_rand, main='Uniform Distribution')
-
-```
-```{r}
-
 beta_dist <- lapply(X_rand, beta) >= Y_rand
 
 X_beta <- X_rand[beta_dist]
@@ -40,35 +36,42 @@ Y_beta <- Y_rand[beta_dist]
 
 plot(X_beta, Y_beta, main='Beta Distribution')
 ```
-The median of a value or function is calculated using
-$$
-median(f(x)) = \frac{\sum f(x)}{n}
-$$
-We can calculate a random sample within our distribution 
-```{r}
-sorted = sort(Y_beta)
-if( length(sorted) %% 2 == 0){
-  first = length(sorted)/2
-  second = length(sorted)/2 + 1
-  median_est = (sorted[first] + sorted[second])/2
-} else {
-  middle = length(sorted)/2
-  median_est = sorted[middle]
-}
 
+We sort the list of $Y$ values and pick the central value.  In the case of an even number of values we must take the average of the two central values.
+
+```{r}
+sorted <- sort(Y_beta)
+
+# if even -> take the average of the two middle values of the sorted list
+if( length(sorted) %% 2 == 0){
+  first <- length(sorted)/2
+  second <- length(sorted)/2 + 1
+  median_est <- (sorted[first] + sorted[second])/2
+  
+# if odd -> take the middle value of the sorted list
+} else {
+  middle <- length(sorted)/2
+  median_est <- sorted[middle]
+}
+```
+
+To check the answer, we can use built in functions dbeta and median to calculate the true value.
+
+```{r}
 X <- seq(0, 1, by = 0.02)
 Y <- dbeta(X, shape1=a, shape2=b)
-median_act = median(Y, na.rm = FALSE)
+median_act <- median(Y, na.rm = FALSE)
 
 plot(X,Y)
 abline(v=median_est, col='red')
-text(0.8, 1, labels='Est', col='red')
+text(0.85, 1, labels='Est', col='red')
 abline(v=median_act, col='blue')
+text(0.65, 1, labels='Act', col='blue')
 
 sprintf("The estimated median is: %f", median_est)
 sprintf("The calculated median is: %f", median_act)
 ```
-
+## Exercise 2
 
 The Central Limit Theorem (CLT) states that given a sufficiently large sample size, the sampling distribution of the sample means approaches a normal distribution — no matter what the shape of the population distribution.
 
@@ -79,14 +82,14 @@ $$
 By taking the mean of the binomial we can simulate the final slot that the ball lands in.  Summing the number of times the mean value equals the value of each slot (rounding to the nearest integer) is equivalent to allowing each slot to fill with multiple balls.  Given a large enough sample size, by the CLT the values will form a normal distribution as plotted below
 
 ```{r}
-balls_dropped = 100
-slots = 50
-balls_per_slot = rep(0, slots)
+balls_dropped <- 100
+slots <- 50
+balls_per_slot <- rep(0, slots)
 for(ball in 1:balls_dropped)
 {
-  mean = rbinom(100, slots, 0.5)                    # Calculate the final landing place
-  mean = trunc(mean)                                # Truncate to integer value
-  balls_per_slot[mean] <- balls_per_slot[mean] + 1  # Increment the sum for the slot
+  mean <- rbinom(100, slots, 0.5)                    # Calculate the final landing place
+  mean <- trunc(mean)                                # Truncate to integer value
+  balls_per_slot[mean] <- balls_per_slot[mean] + 1   # Increment the sum for the slot
 }
 plot(balls_per_slot)
 ```
